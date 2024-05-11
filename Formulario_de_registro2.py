@@ -1,21 +1,13 @@
-
-#FORMULARIO DE REGISTRO DE USUARIO
-#-Registro de usuario y contraseña
-#-Guardar en bd SQlite
-
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox 
 import sqlite3
 import subprocess
-
-
-
-
+import re
 
 class Registro:
     db_name='database_proyecto.db'
-    ruta_script_login=r"C:\Users\Jhon\Desktop\practica_especializaciom\proyecto_final\login\Login.py"
+    ruta_script_login=r"C:\Users\Jhon\Desktop\practica_especializaciom\proyecto_final\Login.py"
     
     def __init__(self,vetana):
         self.window=ventana   
@@ -24,7 +16,8 @@ class Registro:
         self.window.resizable(0,0)
         self.window.config(bd=10)
         self.create_widgets()
-    
+
+
     def create_widgets(self):
         "--------------- Titulo --------------------"
         titulo= Label(ventana, text="REGISTRO DE USUARIO",fg="black",font=("Comic Sans", 13,"bold"),pady=5).pack()
@@ -89,7 +82,7 @@ class Registro:
         self.correo.delete(0, END)
         self.password.delete(0, END)
         self.repetir_password.delete(0, END)
-        self.combo_pregunta.delete(0, END)
+        self.combo_pregunta.set('')
         self.respuesta.delete(0, END)
     
     #call registro              
@@ -98,24 +91,38 @@ class Registro:
         subprocess.call(['python',self.ruta_script_login])
 
 
-    def Registrar_usuario(self):
+    def validar_correo(func):
+        """
+        Decorador para validar si el correo tiene una estructura válida.
+        """
+        def wrapper(self, *args, **kwargs):
+            correo = self.correo.get()
+            # Patrón de expresión regular para validar correos electrónicos
+            patron_correo = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+            if re.match(patron_correo, correo):
+                return func(self, *args, **kwargs)
+            else:
+                messagebox.showerror("ERROR EN REGISTRO", "Verifique el correo electrónico ingresado")
+        return wrapper
+
+    
+    @validar_correo
+    def Registrar_usuario(self,):
         if self.Validar_formulario_completo() and self.Validar_contraseña() and self.Validar_dni():
             query='INSERT INTO Usuarios VALUES(NULL, ?, ?, ?, ?, ?)'
             parameters = (self.dni.get(),self.nombres.get(),self.correo.get(),self.password.get(),self.respuesta.get())
             self.Ejecutar_consulta(query, parameters)
-            self.createTable()
+            self.createTable(self.dni.get())
             messagebox.showinfo("REGISTRO EXITOSO", f'Bienvenido {self.nombres.get()}')
             print('USUARIO CREADO')
-            self.Limpiar_formulario()
-            
-
+            self.Limpiar_formulario
+ 
     def Ejecutar_consulta(self, query, parameters=()):
         with sqlite3.connect(self.db_name) as conexion:
             cursor=conexion.cursor()
             result=cursor.execute(query,parameters)
             conexion.commit()
         return result 
-    
  
     def createTable(self,dni):
         self.dni=dni
@@ -136,8 +143,6 @@ class Registro:
             )
             conn.commit()
         conn.close()
-
-
         
     def Validar_formulario_completo(self):
         if len(self.dni.get()) !=0 and len(self.nombres.get()) !=0 and len(self.password.get()) !=0 and len(self.repetir_password.get()) !=0 and len(self.correo.get()) !=0 and len(self.respuesta.get()) !=0:
@@ -166,10 +171,7 @@ class Registro:
             return True
         else:
             messagebox.showerror("ERROR EN REGISTRO", "DNI registrado anteriormente")
-
-    
-
-    
+ 
 if __name__ == '__main__':
     ventana=Tk()
     application=Registro(ventana)

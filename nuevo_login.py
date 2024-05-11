@@ -46,17 +46,15 @@ class DatabaseManager:
 
 class Authenticator(ABC):
 
-    
     def validar_formulario_completo(self):
         pass
 
-    
     def validar_login(self):
         pass
 
 
 class AuthenticationManager(Authenticator):
-
+    
     db_name='database_proyecto.db'
     tabla='Usuarios'
 
@@ -87,7 +85,6 @@ class LoginUI():
     ruta_script_registro = r"C:\Users\Jhon\Desktop\practica_especializaciom\proyecto_final\Formulario_de_registro.py"
     ruta_script_recuperar=r"C:\Users\Jhon\Desktop\practica_especializaciom\proyecto_final\Recuperar_contraseña.py"
     ruta_script_ingresar=r"C:\Users\Jhon\Desktop\practica_especializaciom\proyecto_final\Crud.py"
-    #ruta_script = os.path.normpath(ruta_script)
 
     def __init__(self,ventana_login,authentication_manager):
         self.window=ventana_login  
@@ -96,7 +93,6 @@ class LoginUI():
         self.window.resizable(0,0)
         self.window.config(bd=10)
         self.authentication_manager=authentication_manager
-      
         self.create_widgets()
 
     def create_widgets(self):
@@ -128,44 +124,29 @@ class LoginUI():
         label_=Label(frame_botones,text="⬇ ¿Olvido su contraseña? ⬇",font=("Comic Sans", 10,"bold")).grid(row=1,column=1,columnspan=2,sticky='s')
         boton_olvido=Button(frame_botones,text="RECUPERAR CONTRASEÑA",command=self.LLamar_recuperar ,height=2,width=24,bg="gray",fg="white",font=("Comic Sans", 10,"bold")).grid(row=2, column=1, columnspan=2, padx=10, pady=8)
 
-        
-        
-    
     def Login(self):
         if(self.authentication_manager.Validar_formulario_completo(self.dni.get(),password= self.password.get())):
             dato = self.authentication_manager.Validar_login(self.dni.get(),password= self.password.get())
             if (dato != []):
                 self.LLamar_crud()
-                #messagebox.showinfo("BIENVENIDO", "Datos ingresados correctamente")
-        
             else:
                 messagebox.showerror("ERROR DE INGRESO", "DNI o contraseña incorrecto") 
         else:    
             messagebox.showerror("ERROR DE INGRESO", "Ingrese su DNI y contraseña!!!")  
-            
-                
-
-    #call recuperar        
+                   
     def LLamar_recuperar(self):
         ventana_login.destroy()    
         subprocess.call(['python',self.ruta_script_recuperar])
-    
-    #call registro              
+                
     def LLamar_registro(self):
         ventana_login.destroy()    
         subprocess.call(['python',self.ruta_script_registro])
-
-    #call crud           
+         
     def LLamar_crud(self):
         os.environ['dni']=self.dni.get()
         ventana_login.destroy()    
         subprocess.call(['python',self.ruta_script_ingresar])
-
-
-
-    
-
-#verificar si el modulo ha sido ejecutado correctamente  
+ 
 if __name__ == '__main__':
     ventana_login = Tk()
     db_manager = DatabaseManager()
