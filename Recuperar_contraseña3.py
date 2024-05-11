@@ -45,6 +45,7 @@ class ValidarFormularioCompleto(Validador):
                 return self._siguiente.validar(data)
             return True
         else:
+            messagebox.showerror("ERROR", "Complete todos los campos del formulario")
             return False
 
 class ValidarContraseña(Validador):
@@ -54,6 +55,7 @@ class ValidarContraseña(Validador):
                 return self._siguiente.validar(data)
             return True
         else:
+            messagebox.showerror("ERROR DE RECUPERACION", "Contraseñas no coinciden")
             return False
 
         
@@ -71,6 +73,7 @@ class ValidarDatosUsuario(Validador):
                 return self._siguiente.validar(data)
             return True
         else:
+            messagebox.showerror("ERROR DE RECUPERACION", "Datos de recuperacion no son correctos")
             return False
     
 
